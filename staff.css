@@ -1,0 +1,101 @@
+.cart.page{
+    margin: 80px auto;
+}
+
+body{
+    background-color: aquamarine;
+}
+
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-info{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.cart-info .img{
+    width: 80px auto;
+}
+
+th{
+    text-align: left;
+    padding: 5px;
+    color: aliceblue;
+    background: rgb(30, 138, 138);
+    font-weight: 500;
+
+}
+
+td{
+    padding: 10px 5px;
+    color: rgb(203, 221, 236);
+}
+
+td input{
+   
+    padding: 5px;
+}
+
+td img{
+    width: 150px;
+    height: 150px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.total-price {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.total-price table{
+    border-top: 3px  solid  black;
+}
+
+td:last-child{
+    text-align: right;
+}
+
+th:last-child{
+    text-align: right;
+}
+
+
+.wrapper{
+    width: 1000px;
+    background: transparent;
+    border: 3px solid rgb(207, 194, 152);
+    backdrop-filter: blur(20px);
+    border-radius: 10px;
+    padding: 30px 40px;
+    
+}
+
+body {
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; */
+    background-color:#5eaedd ;
+    background: url(full_nat-fishing-gear-blog.jpg) no-repeat;
+    background-size: cover;
+    background-position: center;
+    }
+
+.nav {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.cart{
+    color: black;
+}
