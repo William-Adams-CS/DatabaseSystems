@@ -33,9 +33,13 @@ th{
 
 }
 
+th:first-child{
+    text-align: right;
+}
+
 td{
     padding: 10px 5px;
-    color: rgb(203, 221, 236);
+    color: white;
 }
 
 td input{
@@ -98,4 +102,11 @@ body {
 
 .cart{
     color: black;
+}
+
+.logo{
+    color: blue;
+    width: 5px;
+    height: 5px;
+    align-self: auto;
 }

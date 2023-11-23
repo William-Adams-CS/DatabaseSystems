@@ -11,24 +11,25 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container">
-              <a class="navbar-brand" href="#">Navbar scroll</a>
+              <a class="logo" href="#"></a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse" id="navbarScroll">
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+        
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Products</a>
+                    <a class="nav-link active" aria-current="page" href="#">Admin</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Staff</a>
-                  </li>
-                  
                   <li class="nav-item">
                     <a class="nav-link" href="#">Manager</a>
                   </li>
+                  
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Admin</a>
+                    <a class="nav-link" href="#">Product</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Staff</a>
                   </li>
                   
                 </ul>
@@ -45,6 +46,11 @@
     </header>
 
     <main>
+        <table class="product">
+            <tr>
+                <th style="text-align: center;">PRODUCT</th>
+            </tr>
+        </table>
         <div class="container">
             <div class="row">
              <div class="col d-flex justify-content-center">
@@ -52,10 +58,8 @@
     <div class="small-container cart-page">
     <table>
         <tr>
-            <th>Product</th>
+            <th style="text-align: left;">Product</th>
             <th>In Stock</th>
-            <th>Customer</th>
-            <th>orders</th>
             <th>Upcoming deliveries</th>
             
         </tr>
@@ -71,8 +75,6 @@
                 </div>
             </td>
             <td> 10</td>
-            <td>Michael Johnson</td>
-            <td>2</td>
             <td>10-02-23 by 4pm</td>
         </tr>
 
@@ -88,8 +90,6 @@
                 </div>
             </td>
             <td> 15</td>
-            <td>Michael Johnson</td>
-            <td>2</td>
             <td>10-02-23 by 4pm</td>
             
         </tr>
@@ -106,8 +106,6 @@
                 </div>
             </td>
             <td> 20</td>
-            <td>Michael Johnson</td>
-            <td>2</td>
             <td>10-02-23 by 4pm</td>
             
         </tr>
@@ -124,33 +122,81 @@
                 </div>
             </td>
             <td> 25</td>
-            <td>Michael Johnson</td>
-            <td>2</td>
             <td>10-02-23 by 4pm</td>
             
         </tr>
 
         
     </table>
-<table>
-    <div class="total-price">
-        <tr>
-            <td>SubTotal</td>
-            <td>$200</td>
-        </tr>
-        <tr>
-            <td>Tax</td>
-            <td>$30</td>
-        </tr>
-        <tr>
-            <td>Total</td>
-            <td>$230</td>
-        </tr>
-    </div>
-    </table>
+
 </div>
 </div>
              </div>
+            </div>
+        </div>
+
+        <table class="product">
+            <tr>
+                <th style="text-align: center;">CUSTOMER</th>
+            </tr>
+        </table>
+        <div class="container">
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <div class="wrapper">
+                        <div class="small-container cart-page">
+                        <table>
+                            <tr>
+                                <th style="text-align: left;">Name</th>
+                                <th>Product ordered </th>
+                                <th>Amount</th>
+                                
+                            </tr>
+                            <tr>
+                                <td>Benny Adeoye</td>
+                                
+                                <td> <ul>
+                                    <li>Fishing gear</li>
+                                    <li>Camp Bag</li>
+                                </ul></td>
+                                
+                                <td>10-02-23 by 4pm</td>
+                            </tr>
+                    
+                            <tr>
+                                <td> Mary Blessed</td>
+                                
+                                <td> 15</td>
+                                <td>10-02-23 by 4pm</td>
+                                
+                            </tr>
+                    
+                            <tr>
+                                <td>Gold Adeoye
+                                </td>
+                                <td> 20</td>
+                                <td>10-02-23 by 4pm</td>
+                                
+                            </tr>
+                    
+                            <tr>
+                                <td>Vera Okoye
+                                    
+                                </td>
+                                <td> 25</td>
+                                <td>10-02-23 by 4pm</td>
+                                
+                            </tr>
+                    
+
+                    
+                    
+                            
+                        </table>
+        
+                    </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
