@@ -177,133 +177,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <?php
-      // Assuming you have already established a database connection
-      // Replace the placeholders with your actual database credentials
-      $servername = "your_servername";
-      $username = "your_username";
-      $password = "your_password";
-      $dbname = "Coral-Cove-Database";
 
-      $conn = new mysqli($servername, $username, $password, $dbname);
-
-      if ($conn->connect_error) {
-          die("Connection failed: " . $conn->connect_error);
+    $servername = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
+    
+      try {
+          $mysql = new PDO("mysql:host=".$host.";dbname=".$database,$username, $password);
+          echo "successful Connection";
       }
-
-      // Function to retrieve staff salary
-      function getStaffSalary($staffId) {
-          global $conn;
-
-          $sql = "SELECT Salary FROM Staff WHERE StaffID = ?";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("i", $staffId); // "i" represents integer type
-          $stmt->execute();
-          
-          $result = $stmt->get_result();
-
-          if ($result->num_rows > 0) {
-              return $result->fetch_assoc()['Salary'];
-          } else {
-              return null;
-          }
+      catch(Exception $e) {
+          echo $e;
       }
-
-      // Function to retrieve sales by branch
-      function getSalesByBranch() {
-          global $conn;
-
-          $sql = "SELECT BranchName, SUM(TotalCost) AS TotalSales
-                  FROM OrderInfo
-                  GROUP BY BranchName";
-          $result = $conn->query($sql);
-
-          if ($result->num_rows > 0) {
-              $salesByBranch = array();
-              while ($row = $result->fetch_assoc()) {
-                  $salesByBranch[] = $row;
-              }
-              return $salesByBranch;
-          } else {
-              return null;
-          }
-      }
-
-      // Function to retrieve profit by branch or total profit
-      function getProfit($branchName = null) {
-          global $conn;
-
-          $sql = "SELECT BranchName, SUM(TotalCost) - SUM(Cost) AS Profit
-                  FROM OrderInfo
-                  JOIN SupplierItem ON OrderInfo.OrderID = SupplierItem.OrderID
-                  GROUP BY BranchName";
-                  
-          if ($branchName !== null) {
-              $sql .= " HAVING BranchName = ?";
-          }
-
-          $stmt = $conn->prepare($sql);
-
-          if ($branchName !== null) {
-              $stmt->bind_param("s", $branchName); // "s" represents string type
-          }
-
-          $stmt->execute();
-
-          $result = $stmt->get_result();
-
-          if ($result->num_rows > 0) {
-              $profit = array();
-              while ($row = $result->fetch_assoc()) {
-                  $profit[] = $row;
-              }
-              return $profit;
-          } else {
-              return null;
-          }
-      }
-
-      // Function to retrieve sales by month and by branch
-      function getSalesByMonthAndBranch() {
-          global $conn;
-
-          $sql = "SELECT DATE_FORMAT(OrderDate, '%Y-%m') AS Month, BranchName, SUM(TotalCost) AS TotalSales
-                  FROM OrderInfo
-                  GROUP BY Month, BranchName";
-          $result = $conn->query($sql);
-
-          if ($result->num_rows > 0) {
-              $salesByMonthAndBranch = array();
-              while ($row = $result->fetch_assoc()) {
-                  $salesByMonthAndBranch[] = $row;
-              }
-              return $salesByMonthAndBranch;
-          } else {
-              return null;
-          }
-      }
-
-      // Function to retrieve products that are in and out of stock
-      function getStockInfo() {
-          global $conn;
-
-          $sql = "SELECT Product.ProductID, Product.ProductName, Stock.StockQuantity
-                  FROM Product
-                  LEFT JOIN Stock ON Product.ProductID = Stock.ProductID";
-          $result = $conn->query($sql);
-
-          if ($result->num_rows > 0) {
-              $stockInfo = array();
-              while ($row = $result->fetch_assoc()) {
-                  $stockInfo[] = $row;
-              }
-              return $stockInfo;
-          } else {
-              return null;
-          }
-      }
-
-      // Close the database connection
-      $conn->close();
     ?>
 
 </body>

@@ -147,105 +147,85 @@
 
 
     <?php
-      // Assuming you have already established a database connection
-      // Replace the placeholders with your actual database credentials
-      $servername = "your_servername";
-      $username = "your_username";
-      $password = "your_password";
-      $dbname = "Coral-Cove-Database";
 
-      $conn = new mysqli($servername, $username, $password, $dbname);
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
 
-      if ($conn->connect_error) {
-          die("Connection failed: " . $conn->connect_error);
-      }
+    try {
+        $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+        echo "Successful Connection";
+    } catch(Exception $e) {
+        echo $e;
+    }
 
-      // Function to retrieve customer information
-      function getCustomerInfo($customerId) {
-          global $conn;
+    // Function to read customer data
+    function readCustomerData($customerId) {
+        global $mysql;
+        $query = $mysql->prepare("SELECT * FROM Customers WHERE CustomerID = :customerId");
+        $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
 
-          $sql = "SELECT * FROM Customers WHERE CustomerID = ?";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("i", $customerId); // "i" represents integer type
-          $stmt->execute();
-          
-          $result = $stmt->get_result();
+    // Function to update customer data
+    function updateCustomerData($customerId, $firstName, $lastName, $email, $phone, $loyaltyPoints) {
+        global $mysql;
+        $query = $mysql->prepare("UPDATE Customers SET FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, LoyaltyPoints = :loyaltyPoints WHERE CustomerID = :customerId");
+        $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
+        $query->bindParam(':firstName', $firstName, PDO::PARAM_STR);
+        $query->bindParam(':lastName', $lastName, PDO::PARAM_STR);
+        $query->bindParam(':email', $email, PDO::PARAM_STR);
+        $query->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $query->bindParam(':loyaltyPoints', $loyaltyPoints, PDO::PARAM_INT);
+        $query->execute();
+    }
 
-          if ($result->num_rows > 0) {
-              return $result->fetch_assoc();
-          } else {
-              return null;
-          }
-      }
+    // Function to read orders made by the customer
+    function readCustomerOrders($customerId) {
+        global $mysql;
+        $query = $mysql->prepare("SELECT * FROM OrderInfo WHERE CustomerID = :customerId");
+        $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-      // Function to update customer information
-      function updateCustomerInfo($customerId, $firstName, $lastName, $email, $phone) {
-          global $conn;
+    // Function to read products available for purchase
+    function readAvailableProducts() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Product");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-          $sql = "UPDATE Customers SET FirstName=?, LastName=?, Email=?, Phone=? WHERE CustomerID=?";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("ssssi", $firstName, $lastName, $email, $phone, $customerId); // "s" represents string, "i" represents integer
-          $stmt->execute();
+    // Function to delete customer account
+    function deleteCustomerAccount($customerId) {
+        global $mysql;
+        $query = $mysql->prepare("DELETE FROM Customers WHERE CustomerID = :customerId");
+        $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
+        $query->execute();
+    }
 
-          return $stmt->affected_rows > 0;
-      }
+    // Sample usage
+    $customerId = 1; // Replace with the actual customer ID
 
-      // Function to retrieve orders made by a customer
-      function getCustomerOrders($customerId) {
-          global $conn;
+    // Read customer data
+    $customerData = readCustomerData($customerId);
+    print_r($customerData);
 
-          $sql = "SELECT * FROM OrderInfo WHERE CustomerID = ?";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("i", $customerId); // "i" represents integer type
-          $stmt->execute();
+    // Update customer data
+    updateCustomerData($customerId, 'NewFirstName', 'NewLastName', 'newemail@example.com', 'newphone', 100);
 
-          $result = $stmt->get_result();
+    // Read customer orders
+    $customerOrders = readCustomerOrders($customerId);
+    print_r($customerOrders);
 
-          if ($result->num_rows > 0) {
-              $orders = array();
-              while ($row = $result->fetch_assoc()) {
-                  $orders[] = $row;
-              }
-              return $orders;
-          } else {
-              return null;
-          }
-      }
+    // Read available products
+    $availableProducts = readAvailableProducts();
+    print_r($availableProducts);
 
-      // Function to retrieve products available for purchase
-      function getAvailableProducts() {
-          global $conn;
-
-          $sql = "SELECT * FROM Product";
-          $result = $conn->query($sql);
-
-          if ($result->num_rows > 0) {
-              $products = array();
-              while ($row = $result->fetch_assoc()) {
-                  $products[] = $row;
-              }
-              return $products;
-          } else {
-              return null;
-          }
-      }
-
-      // Function to delete a customer account
-      function deleteCustomerAccount($customerId) {
-          global $conn;
-
-          // Add logic for cascading deletes, e.g., delete associated orders, order items, etc.
-
-          $sql = "DELETE FROM Customers WHERE CustomerID = ?";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("i", $customerId); // "i" represents integer type
-          $stmt->execute();
-
-          return $stmt->affected_rows > 0;
-      }
-
-      // Close the database connection
-      $conn->close();
+    // Delete customer account
+    deleteCustomerAccount($customerId);
     ?>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

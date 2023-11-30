@@ -155,143 +155,19 @@
         </div>
     </main>
     <?php
-        // Assuming you have already established a database connection
-        // Replace the placeholders with your actual database credentials
-        $servername = "your_servername";
-        $username = "your_username";
-        $password = "your_password";
-        $dbname = "Coral-Cove-Database";
 
-        $conn = new mysqli($servername, $username, $password, $dbname);
+    $servername = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
 
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Function to retrieve staff information
-        function getStaffInfo($staffId) {
-            global $conn;
-
-            $sql = "SELECT * FROM Staff WHERE StaffID = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $staffId); // "i" represents integer type
-            $stmt->execute();
-            
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                return $result->fetch_assoc();
-            } else {
-                return null;
-            }
-        }
-
-        // Function to update staff information
-        function updateStaffInfo($staffId, $firstName, $lastName, $email, $phone) {
-            global $conn;
-
-            $sql = "UPDATE Staff SET FirstName=?, LastName=?, Email=?, Phone=? WHERE StaffID=?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssssi", $firstName, $lastName, $email, $phone, $staffId); // "s" represents string, "i" represents integer
-            $stmt->execute();
-
-            return $stmt->affected_rows > 0;
-        }
-
-        // Function to retrieve customer information
-        function getCustomerInfo() {
-            global $conn;
-
-            $sql = "SELECT * FROM Customers";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $customers = array();
-                while ($row = $result->fetch_assoc()) {
-                    $customers[] = $row;
-                }
-                return $customers;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve order information
-        function getOrderInfo() {
-            global $conn;
-
-            $sql = "SELECT * FROM OrderInfo";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $orders = array();
-                while ($row = $result->fetch_assoc()) {
-                    $orders[] = $row;
-                }
-                return $orders;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve delivery information
-        function getDeliveryInfo() {
-            global $conn;
-
-            $sql = "SELECT * FROM Deliveries";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $deliveries = array();
-                while ($row = $result->fetch_assoc()) {
-                    $deliveries[] = $row;
-                }
-                return $deliveries;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve product information
-        function getProductInfo() {
-            global $conn;
-
-            $sql = "SELECT * FROM Product";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $products = array();
-                while ($row = $result->fetch_assoc()) {
-                    $products[] = $row;
-                }
-                return $products;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve products that are in and out of stock
-        function getStockInfo() {
-            global $conn;
-
-            $sql = "SELECT Product.ProductID, Product.ProductName, Stock.StockQuantity
-                    FROM Product
-                    LEFT JOIN Stock ON Product.ProductID = Stock.ProductID";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $stockInfo = array();
-                while ($row = $result->fetch_assoc()) {
-                    $stockInfo[] = $row;
-                }
-                return $stockInfo;
-            } else {
-                return null;
-            }
-        }
-
-        // Close the database connection
-        $conn->close();
+      try {
+          $mysql = new PDO("mysql:host=".$host.";dbname=".$database,$username, $password);
+          echo "successful Connection";
+      }
+      catch(Exception $e) {
+          echo $e;
+      }
     ?>
 
 </body>

@@ -155,117 +155,19 @@
         </div>
     </main>
     <?php
-        // Assuming you have already established a database connection
-        // Replace the placeholders with your actual database credentials
-        $servername = "your_servername";
-        $username = "your_username";
-        $password = "your_password";
-        $dbname = "Coral-Cove-Database";
 
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Function to retrieve manager information
-        function getManagerInfo($managerId) {
-            global $conn;
-
-            $sql = "SELECT * FROM Staff WHERE StaffID = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $managerId); // "i" represents integer type
-            $stmt->execute();
-            
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                return $result->fetch_assoc();
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve staff members' information
-        function getStaffMembersInfo($managerId) {
-            global $conn;
-
-            $sql = "SELECT * FROM Staff WHERE ManagerID = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $managerId); // "i" represents integer type
-            $stmt->execute();
-
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                $staffMembers = array();
-                while ($row = $result->fetch_assoc()) {
-                    $staffMembers[] = $row;
-                }
-                return $staffMembers;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve products that are in and out of stock
-        function getStockInfo() {
-            global $conn;
-
-            $sql = "SELECT Product.ProductID, Product.ProductName, Stock.StockQuantity
-                    FROM Product
-                    LEFT JOIN Stock ON Product.ProductID = Stock.ProductID";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $stockInfo = array();
-                while ($row = $result->fetch_assoc()) {
-                    $stockInfo[] = $row;
-                }
-                return $stockInfo;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve supplier information
-        function getSupplierInfo() {
-            global $conn;
-
-            $sql = "SELECT * FROM Supplier";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $suppliers = array();
-                while ($row = $result->fetch_assoc()) {
-                    $suppliers[] = $row;
-                }
-                return $suppliers;
-            } else {
-                return null;
-            }
-        }
-
-        // Function to retrieve product information
-        function getProductInfo() {
-            global $conn;
-
-            $sql = "SELECT * FROM Product";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                $products = array();
-                while ($row = $result->fetch_assoc()) {
-                    $products[] = $row;
-                }
-                return $products;
-            } else {
-                return null;
-            }
-        }
-
-        // Close the database connection
-        $conn->close();
+    $servername = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
+    
+      try {
+          $mysql = new PDO("mysql:host=".$host.";dbname=".$database,$username, $password);
+          echo "successful Connection";
+      }
+      catch(Exception $e) {
+          echo $e;
+      }
     ?>
 
 </body>
