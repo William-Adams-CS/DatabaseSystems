@@ -145,6 +145,109 @@
 
     </footer>
 
+
+    <?php
+      // Assuming you have already established a database connection
+      // Replace the placeholders with your actual database credentials
+      $servername = "your_servername";
+      $username = "your_username";
+      $password = "your_password";
+      $dbname = "Coral-Cove-Database";
+
+      $conn = new mysqli($servername, $username, $password, $dbname);
+
+      if ($conn->connect_error) {
+          die("Connection failed: " . $conn->connect_error);
+      }
+
+      // Function to retrieve customer information
+      function getCustomerInfo($customerId) {
+          global $conn;
+
+          $sql = "SELECT * FROM Customers WHERE CustomerID = ?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("i", $customerId); // "i" represents integer type
+          $stmt->execute();
+          
+          $result = $stmt->get_result();
+
+          if ($result->num_rows > 0) {
+              return $result->fetch_assoc();
+          } else {
+              return null;
+          }
+      }
+
+      // Function to update customer information
+      function updateCustomerInfo($customerId, $firstName, $lastName, $email, $phone) {
+          global $conn;
+
+          $sql = "UPDATE Customers SET FirstName=?, LastName=?, Email=?, Phone=? WHERE CustomerID=?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("ssssi", $firstName, $lastName, $email, $phone, $customerId); // "s" represents string, "i" represents integer
+          $stmt->execute();
+
+          return $stmt->affected_rows > 0;
+      }
+
+      // Function to retrieve orders made by a customer
+      function getCustomerOrders($customerId) {
+          global $conn;
+
+          $sql = "SELECT * FROM OrderInfo WHERE CustomerID = ?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("i", $customerId); // "i" represents integer type
+          $stmt->execute();
+
+          $result = $stmt->get_result();
+
+          if ($result->num_rows > 0) {
+              $orders = array();
+              while ($row = $result->fetch_assoc()) {
+                  $orders[] = $row;
+              }
+              return $orders;
+          } else {
+              return null;
+          }
+      }
+
+      // Function to retrieve products available for purchase
+      function getAvailableProducts() {
+          global $conn;
+
+          $sql = "SELECT * FROM Product";
+          $result = $conn->query($sql);
+
+          if ($result->num_rows > 0) {
+              $products = array();
+              while ($row = $result->fetch_assoc()) {
+                  $products[] = $row;
+              }
+              return $products;
+          } else {
+              return null;
+          }
+      }
+
+      // Function to delete a customer account
+      function deleteCustomerAccount($customerId) {
+          global $conn;
+
+          // Add logic for cascading deletes, e.g., delete associated orders, order items, etc.
+
+          $sql = "DELETE FROM Customers WHERE CustomerID = ?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("i", $customerId); // "i" represents integer type
+          $stmt->execute();
+
+          return $stmt->affected_rows > 0;
+      }
+
+      // Close the database connection
+      $conn->close();
+    ?>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
