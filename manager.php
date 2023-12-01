@@ -181,8 +181,8 @@
     // Function to read manager data
     function readManagerData($managerId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :managerId");
-        $query->bindParam(':managerId', $managerId, PDO::PARAM_INT);
+        $query = $mysql->prepare("SELECT StaffID = :staffId, FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, Position = :position, Salary = :salary, BranchName = :branchName FROM Manager WHERE StaffID = :staffID GROUP BY StaffID;");
+        $query->bindParam(':managerId', $managerId, PDO::PARAM_INT);     //update bindParams to have all the fields selected like :staffId etc
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
@@ -190,8 +190,8 @@
     // Function to read staff data (reused from the Staff page)
     function readStaffData($staffId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :staffId");
-        $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+        $query = $mysql->prepare("SELECT StaffID = :staffId, FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, Position = :position, Salary = :salary, BranchName = :branchName FROM Manager GROUP BY StaffID;");
+        $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);       //update bindParams to have all the fields selected
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
@@ -199,26 +199,23 @@
     // Function to read products that are in and out of stock
     function determineStockStatus() {
         global $mysql;
-        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity > 0");
+        $query = $mysql->query("SELECT BranchName, ProductID, StockQuantity, CASE WHEN StockQuantity > 0 THEN 'In Stock' ELSE 'Out of Stock' END AS StockStatus FROM Stock;");
         $inStock = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity = 0");
-        $outOfStock = $query->fetchAll(PDO::FETCH_ASSOC);
-    
         return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
     }
     
     // Function to read supplier information
     function readSupplierInformation() {
         global $mysql;
-        $query = $mysql->query("SELECT * FROM Supplier");
+        $query = $mysql->query("SELECT SupplierName, ContactPerson, SupplierEmail, SupplierPhone, AddressLine1, AddressLine2, PostalCode FROM Manager GROUP BY SupplierName;");
+        // update bindParams to have all the fields selected
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
     // Function to read product information (reused from the Staff page)
     function readProductInformation() {
         global $mysql;
-        $query = $mysql->query("SELECT * FROM Product");
+        $query = $mysql->query("SELECT ProductName, ProductImageAddress, Category, Price FROM Manager WHERE ProductName IS NOT NULL;");
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     ?>
