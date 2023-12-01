@@ -173,7 +173,7 @@
     // Function to read customer data
     function readCustomerData($customerId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT * FROM Customers WHERE CustomerID = :customerId");
+        $query = $mysql->prepare("SELECT FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, LoyaltyPoints = :loyaltyPoints, AddressLine1 = :addressLine1, AddressLine2 = :addressLine2, City = :city, PostalCode = :postalCode FROM Customer WHERE CustomerID = :customerID GROUP BY CustomerID;");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
@@ -182,7 +182,7 @@
     // Function to update customer data
     function updateCustomerData($customerId, $firstName, $lastName, $email, $phone, $loyaltyPoints) {
         global $mysql;
-        $query = $mysql->prepare("UPDATE Customers SET FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, LoyaltyPoints = :loyaltyPoints WHERE CustomerID = :customerId");
+        $query = $mysql->prepare("UPDATE Customer SET FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, LoyaltyPoints = :loyaltyPoints, AddressLine1 = :addressLine1, AddressLine2 = :addressLine2, City = :city, PostalCode = :postalCode WHERE CustomerID = :customerId");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->bindParam(':firstName', $firstName, PDO::PARAM_STR);
         $query->bindParam(':lastName', $lastName, PDO::PARAM_STR);
@@ -195,7 +195,7 @@
     // Function to read orders made by the customer
     function readCustomerOrders($customerId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT * FROM OrderInfo WHERE CustomerID = :customerId");
+        $query = $mysql->prepare("SELECT OrderID, FirstName, LastName, TotalCost, OrderDate, ExpectedDeliveryDate, DeliveryStatus FROM Customer WHERE CustomerID = :customerId GROUP BY OrderID;");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
         return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -204,14 +204,15 @@
     // Function to read products available for purchase
     function readAvailableProducts() {
         global $mysql;
-        $query = $mysql->query("SELECT * FROM Product");
+        $query = $mysql->query("SELECT ProductName, ProductImageAddress, Category, Price FROM Customer WHERE ProductName IS NOT NULL;");
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Function to delete customer account
     function deleteCustomerAccount($customerId) {
         global $mysql;
-        $query = $mysql->prepare("DELETE FROM Customers WHERE CustomerID = :customerId");
+        $query = $mysql->prepare("DELETE FROM Customer WHERE CustomerID = :customerId
+");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
     }
