@@ -161,13 +161,56 @@
     $password = "Password123";
     $dbname = "coral-cove-database";
     
-      try {
-          $mysql = new PDO("mysql:host=".$host.";dbname=".$database,$username, $password);
-          echo "successful Connection";
-      }
-      catch(Exception $e) {
-          echo $e;
-      }
+    try {
+        $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+        echo "Successful Connection";
+    } catch(Exception $e) {
+        echo $e;
+    }
+    
+    // Function to read manager data
+    function readManagerData($managerId) {
+        global $mysql;
+        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :managerId");
+        $query->bindParam(':managerId', $managerId, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read staff data (reused from the Staff page)
+    function readStaffData($staffId) {
+        global $mysql;
+        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :staffId");
+        $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read products that are in and out of stock
+    function determineStockStatus() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity > 0");
+        $inStock = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity = 0");
+        $outOfStock = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
+    }
+    
+    // Function to read supplier information
+    function readSupplierInformation() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Supplier");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read product information (reused from the Staff page)
+    function readProductInformation() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Product");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
     ?>
 
 </body>

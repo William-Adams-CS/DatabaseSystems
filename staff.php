@@ -161,13 +161,75 @@
     $password = "Password123";
     $dbname = "coral-cove-database";
 
-      try {
-          $mysql = new PDO("mysql:host=".$host.";dbname=".$database,$username, $password);
-          echo "successful Connection";
-      }
-      catch(Exception $e) {
-          echo $e;
-      }
+    try {
+        $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+        echo "Successful Connection";
+    } catch(Exception $e) {
+        echo $e;
+    }
+    
+    // Function to read staff data
+    function readStaffData($staffId) {
+        global $mysql;
+        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :staffId");
+        $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to update staff information
+    function updateStaffInfo($staffId, $firstName, $lastName, $email, $phone, $position, $salary) {
+        global $mysql;
+        $query = $mysql->prepare("UPDATE Staff SET FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, Position = :position, Salary = :salary WHERE StaffID = :staffId");
+        $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+        $query->bindParam(':firstName', $firstName, PDO::PARAM_STR);
+        $query->bindParam(':lastName', $lastName, PDO::PARAM_STR);
+        $query->bindParam(':email', $email, PDO::PARAM_STR);
+        $query->bindParam(':phone', $phone, PDO::PARAM_STR);
+        $query->bindParam(':position', $position, PDO::PARAM_STR);
+        $query->bindParam(':salary', $salary, PDO::PARAM_INT);
+        $query->execute();
+    }
+    
+    // Function to read customer information
+    function readCustomerInformation() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Customers");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read order information
+    function readOrderInformation() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM OrderInfo");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read delivery information
+    function readDeliveryInformation() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Location");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read product information
+    function readProductInformation() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Product");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to determine products that are in and out of stock
+    function determineStockStatus() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity > 0");
+        $inStock = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity = 0");
+        $outOfStock = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
+    }
     ?>
 
 </body>

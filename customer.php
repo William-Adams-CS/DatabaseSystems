@@ -1,3 +1,7 @@
+<?php
+  session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -148,6 +152,11 @@
 
     <?php
 
+    if ($_SESSION["username"] != "customer") {
+      header("Location: "."index.html");
+      die();
+    }
+
     $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
     $username = "admin";
     $password = "Password123";
@@ -205,27 +214,6 @@
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
     }
-
-    // Sample usage
-    $customerId = 1; // Replace with the actual customer ID
-
-    // Read customer data
-    $customerData = readCustomerData($customerId);
-    print_r($customerData);
-
-    // Update customer data
-    updateCustomerData($customerId, 'NewFirstName', 'NewLastName', 'newemail@example.com', 'newphone', 100);
-
-    // Read customer orders
-    $customerOrders = readCustomerOrders($customerId);
-    print_r($customerOrders);
-
-    // Read available products
-    $availableProducts = readAvailableProducts();
-    print_r($availableProducts);
-
-    // Delete customer account
-    deleteCustomerAccount($customerId);
     ?>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

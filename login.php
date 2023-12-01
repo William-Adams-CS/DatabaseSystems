@@ -1,20 +1,21 @@
 <html>
     <body>
         <?php
-            $username = $_GET["username"];
-            $password = $_GET["password"];
+            session_start();
+            $_SESSION["username"] = $_GET["username"];
+            $_SESSION["password"] = $_GET["password"];
             
-            if ($password == "password"){
-                if ($username == "customer") {
+            if ($_SESSION["password"] == "password"){
+                if ($_SESSION["username"] == "customer") {
                     header("Location: "."customer.php");
                     die();
-                } elseif ($username == "staff") {
+                } elseif ($_SESSION["username"] == "staff") {
                     header("Location: "."staff.php");
                     die();
-                } elseif ($username == "manager") {
+                } elseif ($_SESSION["username"] == "manager") {
                     header("Location: "."manager.php");
                     die();
-                } elseif ($username == "executive") {
+                } elseif ($_SESSION["username"] == "executive") {
                     header("Location: "."executive.php");
                     die();
                 } else {

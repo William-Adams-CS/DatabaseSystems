@@ -183,13 +183,82 @@
     $password = "Password123";
     $dbname = "coral-cove-database";
     
-      try {
-          $mysql = new PDO("mysql:host=".$host.";dbname=".$database,$username, $password);
-          echo "successful Connection";
-      }
-      catch(Exception $e) {
-          echo $e;
-      }
+    try {
+      $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+      echo "Successful Connection";
+    } catch(Exception $e) {
+        echo $e;
+    }
+    
+    // Function to read staff data (reused from the Staff and Manager pages)
+    function readStaffData($staffId) {
+        global $mysql;
+        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :staffId");
+        $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read staff salary
+    function readStaffSalary($staffId) {
+        $staffData = readStaffData($staffId);
+        return $staffData['Salary'];
+    }
+    
+    // Function to read sales by branch and profit by branch or total profit
+    function readSalesAndProfit($branchName = null) {
+        global $mysql;
+    
+        $salesQuery = "SELECT BranchName, SUM(TotalCost) AS TotalSales FROM OrderInfo GROUP BY BranchName";
+        $profitQuery = "SELECT BranchName, SUM(TotalCost - CostPerUnit * QuantityOrdered) AS TotalProfit FROM OrderInfo 
+                        JOIN SupplierItem ON OrderInfo.OrderDate = SupplierItem.DateOrdered GROUP BY BranchName";
+    
+        if ($branchName !== null) {
+            $salesQuery .= " WHERE BranchName = :branchName";
+            $profitQuery .= " WHERE BranchName = :branchName";
+        }
+    
+        $salesStatement = $mysql->prepare($salesQuery);
+        $profitStatement = $mysql->prepare($profitQuery);
+    
+        if ($branchName !== null) {
+            $salesStatement->bindParam(':branchName', $branchName, PDO::PARAM_STR);
+            $profitStatement->bindParam(':branchName', $branchName, PDO::PARAM_STR);
+        }
+    
+        $salesStatement->execute();
+        $profitStatement->execute();
+    
+        $salesResult = $salesStatement->fetchAll(PDO::FETCH_ASSOC);
+        $profitResult = $profitStatement->fetchAll(PDO::FETCH_ASSOC);
+    
+        return array('sales' => $salesResult, 'profit' => $profitResult);
+    }
+    
+    // Function to read sales by month and by branch
+    function readSalesByMonthAndBranch() {
+        global $mysql;
+    
+        $query = "SELECT EXTRACT(MONTH FROM OrderDate) AS Month, BranchName, SUM(TotalCost) AS TotalSales 
+                  FROM OrderInfo GROUP BY EXTRACT(MONTH FROM OrderDate), BranchName";
+    
+        $statement = $mysql->prepare($query);
+        $statement->execute();
+    
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to read products that are in and out of stock (reused from the Manager page)
+    function determineStockStatus() {
+        global $mysql;
+        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity > 0");
+        $inStock = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity = 0");
+        $outOfStock = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
+    }
     ?>
 
 </body>
