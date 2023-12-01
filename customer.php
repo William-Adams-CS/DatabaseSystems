@@ -1,5 +1,9 @@
 <?php
   session_start();
+  if ($_SESSION["username"] != "customer") {
+    header("Location: "."index.html");
+    die();
+  }
 ?>
 
 <!DOCTYPE html>
@@ -152,15 +156,12 @@
 
     <?php
 
-    if ($_SESSION["username"] != "customer") {
-      header("Location: "."index.html");
-      die();
-    }
-
     $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
     $username = "admin";
     $password = "Password123";
     $dbname = "coral-cove-database";
+
+    $customerId = 1; //Customer ID of John Smith for use in the code.
 
     try {
         $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);

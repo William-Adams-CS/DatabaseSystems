@@ -1,3 +1,11 @@
+<?php
+  session_start();
+  if ($_SESSION["username"] != "manager") {
+    header("Location: "."index.html");
+    die();
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,10 +164,12 @@
     </main>
     <?php
 
-    $servername = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
     $username = "admin";
     $password = "Password123";
     $dbname = "coral-cove-database";
+
+    $managerId = 29; //Manager ID for Amelia Turner, who manages the Aberdeen branch.
     
     try {
         $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);

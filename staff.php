@@ -1,3 +1,11 @@
+<?php
+  session_start();
+  if ($_SESSION["username"] != "staff") {
+    header("Location: "."index.html");
+    die();
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,10 +164,12 @@
     </main>
     <?php
 
-    $servername = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
     $username = "admin";
     $password = "Password123";
     $dbname = "coral-cove-database";
+
+    $staffId = 14; //Staff ID for James Smith, who works at the Dundee branch.
 
     try {
         $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);

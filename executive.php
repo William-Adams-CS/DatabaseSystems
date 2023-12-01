@@ -1,3 +1,11 @@
+<?php
+  session_start();
+  if ($_SESSION["username"] != "executive") {
+    header("Location: "."index.html");
+    die();
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,10 +186,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <?php
 
-    $servername = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
     $username = "admin";
     $password = "Password123";
     $dbname = "coral-cove-database";
+
+    $staffId = 22; //Staff ID for Robbie Coltrane, who is the ceo.
     
     try {
       $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
