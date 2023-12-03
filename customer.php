@@ -173,29 +173,33 @@
     // Function to read customer data
     function readCustomerData($customerId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, LoyaltyPoints = :loyaltyPoints, AddressLine1 = :addressLine1, AddressLine2 = :addressLine2, City = :city, PostalCode = :postalCode FROM Customer WHERE CustomerID = :customerID GROUP BY CustomerID;");
+        $query = $mysql->prepare("CALL readCustomerData(:customerId);");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
 
     // Function to update customer data
-    function updateCustomerData($customerId, $firstName, $lastName, $email, $phone, $loyaltyPoints) {
+    function updateCustomerData($customerId, $firstName, $lastName, $email, $phone, $loyaltyPoints, $addressLine1, $addressLine2, $city, $postalCode) {
         global $mysql;
-        $query = $mysql->prepare("UPDATE Customer SET FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, LoyaltyPoints = :loyaltyPoints, AddressLine1 = :addressLine1, AddressLine2 = :addressLine2, City = :city, PostalCode = :postalCode WHERE CustomerID = :customerId");
+        $query = $mysql->prepare("CALL updateCustomerData(:customerId,:firstName,:lastName,:email,:phone,:loyaltyPoints,:addressLine1,:addressLine2,:city,:postalCode);");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->bindParam(':firstName', $firstName, PDO::PARAM_STR);
         $query->bindParam(':lastName', $lastName, PDO::PARAM_STR);
         $query->bindParam(':email', $email, PDO::PARAM_STR);
         $query->bindParam(':phone', $phone, PDO::PARAM_STR);
         $query->bindParam(':loyaltyPoints', $loyaltyPoints, PDO::PARAM_INT);
+        $query->bindParam(':addressLine1', $addressLine1, PDO::PARAM_INT);
+        $query->bindParam(':addressLine2', $addressLine2, PDO::PARAM_INT);
+        $query->bindParam(':city', $city, PDO::PARAM_INT);
+        $query->bindParam(':postalCode', $postalCode, PDO::PARAM_INT);
         $query->execute();
     }
 
     // Function to read orders made by the customer
     function readCustomerOrders($customerId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT OrderID, FirstName, LastName, TotalCost, OrderDate, ExpectedDeliveryDate, DeliveryStatus FROM Customer WHERE CustomerID = :customerId GROUP BY OrderID;");
+        $query = $mysql->prepare("CALL readCustomerOrders(:customerId);");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
         return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -204,15 +208,14 @@
     // Function to read products available for purchase
     function readAvailableProducts() {
         global $mysql;
-        $query = $mysql->query("SELECT ProductName, ProductImageAddress, Category, Price FROM Customer WHERE ProductName IS NOT NULL;");
+        $query = $mysql->query("CALL readAvailableProducts();");
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Function to delete customer account
     function deleteCustomerAccount($customerId) {
         global $mysql;
-        $query = $mysql->prepare("DELETE FROM Customer WHERE CustomerID = :customerId
-");
+        $query = $mysql->prepare("CALL deleteCustomerAccount(:customerId);");
         $query->bindParam(':customerId', $customerId, PDO::PARAM_INT);
         $query->execute();
     }
