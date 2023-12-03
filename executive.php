@@ -203,7 +203,7 @@
     // Function to read staff data (reused from the Staff and Manager pages)
     function readStaffData($staffId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT * FROM Staff WHERE StaffID = :staffId");
+        $query = $mysql->prepare("CALL readStaffData(:staffId);");
         $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
@@ -213,6 +213,30 @@
     function readStaffSalary($staffId) {
         $staffData = readStaffData($staffId);
         return $staffData['Salary'];
+    }
+
+    // Function to read branch profit
+    function readBranchProfit() {
+        global $mysql;
+        $query = $mysql->prepare("CALL ReadBranchProfit();");
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Function to read total profit
+    function readTotalProfit() {
+        global $mysql;
+        $query = $mysql->prepare("CALL ReadTotalProfit();");
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Function to read profit by month at each branch
+    function ReadProfitByMonth() {
+        global $mysql;
+        $query = $mysql->prepare("CALL ReadProfitByMonth();");
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
     
     // Function to read sales by branch and profit by branch or total profit
@@ -261,13 +285,9 @@
     // Function to read products that are in and out of stock (reused from the Manager page)
     function determineStockStatus() {
         global $mysql;
-        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity > 0");
-        $inStock = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-        $query = $mysql->query("SELECT * FROM Product WHERE StockQuantity = 0");
-        $outOfStock = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-        return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
+        $query = $mysql->query("CALL determineStockStatus();");
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
     ?>
 
