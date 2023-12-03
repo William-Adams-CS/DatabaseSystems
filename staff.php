@@ -181,16 +181,16 @@
     // Function to read staff data
     function readStaffData($staffId) {
         global $mysql;
-        $query = $mysql->prepare("SELECT StaffID = :staffID, FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, Position = :position, Salary = :salary, BranchName = :branchName FROM StaffView WHERE StaffID = :staffId GROUP BY StaffID;");
+        $query = $mysql->prepare("CALL readStaffData(:staffId);");
         $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);   //remember to bind parameters for all fields above
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
     
     // Function to update staff information
-    function updateStaffInfo($staffId, $firstName, $lastName, $email, $phone, $position, $salary) {
+    function updateStaffInfo($staffId, $firstName, $lastName, $email, $phone, $position, $salary, $Branchname) {
         global $mysql;
-        $query = $mysql->prepare("UPDATE Staff SET FirstName = :firstName, LastName = :lastName, Email = :email, Phone = :phone, Position = :position, Salary = :salary, BranchName = :branchName WHERE StaffID = :staffId");
+        $query = $mysql->prepare("CALL updateStaffInfo(:staffId,:firstName,:lastName,:email,:phone,:position,:salary,:Branchname);");
         $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
         $query->bindParam(':firstName', $firstName, PDO::PARAM_STR);
         $query->bindParam(':lastName', $lastName, PDO::PARAM_STR);
@@ -198,6 +198,7 @@
         $query->bindParam(':phone', $phone, PDO::PARAM_STR);
         $query->bindParam(':position', $position, PDO::PARAM_STR);
         $query->bindParam(':salary', $salary, PDO::PARAM_INT);
+        $query->bindParam(':Branchname', $Branchname, PDO::PARAM_INT);
       //add branchName bind param
         $query->execute();
     }
@@ -212,7 +213,7 @@
     // Function to read order information
     function readOrderInformation() {
         global $mysql;
-        $query = $mysql->query("SELECT OrderID, CustomerFirstName, CustomerLastName, TotalCost, OrderDate, ExpectedDeliveryDate, DeliveryStatus FROM StaffView WHERE OrderID IS NOT NULL GROUP BY OrderID;");
+        $query = $mysql->query("CALL readOrderInformation();");
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
@@ -226,14 +227,14 @@
     // Function to read product information
     function readProductInformation() {
         global $mysql;
-        $query = $mysql->query("SELECT ProductName, ProductImageAddress, Category, Price FROM StaffView WHERE ProductName IS NOT NULL;");
+        $query = $mysql->query("CALL readAvailableProducts();");
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
     // Function to determine products that are in and out of stock
     function determineStockStatus() {
         global $mysql;
-        $query = $mysql->query("SELECT BranchName, ProductID, StockQuantity, CASE WHEN StockQuantity > 0 THEN 'In Stock' ELSE 'Out of Stock' END AS StockStatus FROM Stock;");
+        $query = $mysql->query("CALL determineStockStatus();");
         $inStock = $query->fetchAll(PDO::FETCH_ASSOC);  
         return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
     }
