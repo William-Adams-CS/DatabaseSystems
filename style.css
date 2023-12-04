@@ -1,3 +1,7 @@
 html, body {
     background-color: #181a1b;
 }
+
+img {
+    height: 100px !important;
+}

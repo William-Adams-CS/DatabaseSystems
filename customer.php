@@ -21,6 +21,10 @@
         <div class="text-center">
           <img src="Coral Cove Fisheries Logo - Transparent PNG.png" class="img-fluid" alt="Coral Cove Fisheries Logo">
         </div>
+        <form action="customer.php">
+          <input type="text" name="search">
+          <input type="submit" value="search">
+        </form>
         <?php
 
           $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
@@ -40,11 +44,20 @@
           $array = readAvailableProducts();
           echo "<table class='table table-hover'>
                   <tr>
+                    <th>Product Image</th>
                     <th>Product Name</th>
                     <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Buy</th>
                   </tr>";
           foreach ($array as $var) {
-            echo "<tr><td>", $var['ProductName'], "</td><td>", $var['Price'], "</td></tr>";
+            if (isset($_GET["search"]) and $_GET["search"] != null) {
+              if (str_contains(strtolower($var["ProductName"]), strtolower($_GET["search"]))) {
+                echo "<tr><td><img src='",$var['ProductImageAddress'], "' class='img-fluid'></td><td>", $var['ProductName'], "</td><td> £", $var['Price'], "</td><td><input type='number' name='quantityOf", $var['ProductName'], "' min='1' value='1' /></td><td><button type='button' class='btn btn-primary'>Add To Cart</button></td></tr>";
+              }
+            } else {
+              echo "<tr><td><img src='",$var['ProductImageAddress'], "' class='img-fluid'></td><td>", $var['ProductName'], "</td><td> £", $var['Price'], "</td><td><input type='number' name='quantityOf", $var['ProductName'], "' min='1' value='1' /></td><td><button type='button' class='btn btn-primary'>Add To Cart</button></td></tr>";
+            }           
           }
           echo "</table>";
 
