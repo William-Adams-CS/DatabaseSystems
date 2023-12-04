@@ -208,8 +208,8 @@
     function determineStockStatus() {
         global $mysql;
         $query = $mysql->query("CALL determineStockStatus();");
-        $inStock = $query->fetchAll(PDO::FETCH_ASSOC);
-        return array('inStock' => $inStock, 'outOfStock' => $outOfStock);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
     
     // Function to read supplier information
