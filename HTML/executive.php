@@ -1,3 +1,19 @@
+<?php
+  $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+  $username = "admin";
+  $password = "Password123";
+  $dbname = "coral-cove-database";
+
+  $staffId = 10; //Staff ID for Robbie Coltrane, who is the ceo.
+
+  try {
+    $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+    echo "<script>console.log('Successful Connection');</script>";
+  } catch(Exception $e) {
+      echo $e;
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,6 +57,7 @@
     </nav>
 
     <section>
+    <?php $data = readStaffData($staffId); ?>
         <div class="container py-3">            
             <div class="row">
                 <div class="col-lg-4">
@@ -48,17 +65,19 @@
                         <div class="card-body text-center">
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                            <h5 class="my-3">Robbie Coltrane</h5>
+                            <h5 class="my-3"><?php echo $data["FirstName"], " ", $data["LastName"] ?></h5>
                             <button type="button" class="btn btn-primary">Update Details</button>                                                        
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-lg-8">
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">Staff ID</p>
+                                    <?php echo $data["StaffID"]; ?>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -66,8 +85,9 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <p class="mb-0">Email</p>
+                                    <?php echo $data["Email"]; ?>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -77,6 +97,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">Phone</p>
+                                    <?php echo $data["Phone"]; ?>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -86,6 +107,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">Position</p>
+                                    <?php echo $data["Position"]; ?>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -95,6 +117,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">Salary</p>
+                                    <?php echo "£", $data["Salary"]; ?>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -104,6 +127,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">Branch</p>
+                                    <?php echo $data["BranchName"]; ?>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -119,43 +143,47 @@
     
 
     <section class="profits">
-        <div class="container mt-4">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="card-title branch name">Branch Name</h5>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="card">
-                      <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Sales</h6>
-                        <p>$$</p>
-                        <!-- Sales financial information goes here -->
+    <?php
+      $data = readBranchProfit();
+      print_r($data);
+      foreach ($data as $value) {
+        echo '<div class="container mt-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="card-title branch name">', $value["BranchName"], '</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="card">
+                          <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Sales</h6>
+                            <p> £', $value["Sales"], '</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="card">
+                          <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Expenses</h6>
+                            <p> £', $value["Expenses"], '</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="card">
+                          <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Profit</h6>
+                            <p> £', $value["Profit"], '</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4">
-                    <div class="card">
-                      <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Expenses</h6>
-                        <p>$$</p>
-                        <!-- Expenses financial information goes here -->
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="card">
-                      <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Profit</h6>
-                        <p>$$</p>
-                        <!-- Profit financial information goes here -->
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                </div>';
+      }
+    ?>
+        
 
             <div class="card">
                 <div class="card-header">
@@ -199,6 +227,97 @@
         </div>
       </div>
 
+      <?php
 
+        // Function to read staff data (reused from the Staff and Manager pages)
+        function readStaffData($staffId) {
+            global $mysql;
+            $query = $mysql->prepare("CALL readStaffData(:staffId);");
+            $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // Function to read staff salary
+        function readStaffSalary($staffId) {
+            $staffData = readStaffData($staffId);
+            return $staffData['Salary'];
+        }
+
+        // Function to read branch profit
+        function readBranchProfit() {
+            global $mysql;
+            $query = $mysql->prepare("CALL ReadBranchProfit();");
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // Function to read total profit
+        function readTotalProfit() {
+            global $mysql;
+            $query = $mysql->prepare("CALL ReadTotalProfit();");
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // Function to read profit by month at each branch
+        function ReadProfitByMonth() {
+            global $mysql;
+            $query = $mysql->prepare("CALL ReadProfitByMonth();");
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // Function to read sales by branch and profit by branch or total profit
+        function readSalesAndProfit($branchName = null) {
+            global $mysql;
+
+            $salesQuery = "SELECT BranchName, SUM(TotalCost) AS TotalSales FROM OrderInfo GROUP BY BranchName";
+            $profitQuery = "SELECT BranchName, SUM(TotalCost - CostPerUnit * QuantityOrdered) AS TotalProfit FROM OrderInfo 
+                            JOIN SupplierItem ON OrderInfo.OrderDate = SupplierItem.DateOrdered GROUP BY BranchName";
+
+            if ($branchName !== null) {
+                $salesQuery .= " WHERE BranchName = :branchName";
+                $profitQuery .= " WHERE BranchName = :branchName";
+            }
+
+            $salesStatement = $mysql->prepare($salesQuery);
+            $profitStatement = $mysql->prepare($profitQuery);
+
+            if ($branchName !== null) {
+                $salesStatement->bindParam(':branchName', $branchName, PDO::PARAM_STR);
+                $profitStatement->bindParam(':branchName', $branchName, PDO::PARAM_STR);
+            }
+
+            $salesStatement->execute();
+            $profitStatement->execute();
+
+            $salesResult = $salesStatement->fetchAll(PDO::FETCH_ASSOC);
+            $profitResult = $profitStatement->fetchAll(PDO::FETCH_ASSOC);
+
+            return array('sales' => $salesResult, 'profit' => $profitResult);
+        }
+
+        // Function to read sales by month and by branch
+        function readSalesByMonthAndBranch() {
+            global $mysql;
+
+            $query = "SELECT EXTRACT(MONTH FROM OrderDate) AS Month, BranchName, SUM(TotalCost) AS TotalSales 
+                      FROM OrderInfo GROUP BY EXTRACT(MONTH FROM OrderDate), BranchName";
+
+            $statement = $mysql->prepare($query);
+            $statement->execute();
+
+            return $statement->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Function to read products that are in and out of stock (reused from the Manager page)
+        function determineStockStatus() {
+            global $mysql;
+            $query = $mysql->query("CALL determineStockStatus();");
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+      ?>
 </body>
 </html>
