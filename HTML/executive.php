@@ -144,13 +144,12 @@
 
     <section class="profits">
     <?php
-      $data = readBranchProfit();
-      print_r($data);
-      foreach ($data as $value) {
+      $profitData = readBranchProfit();
+      foreach ($profitData as $profitValue) {
         echo '<div class="container mt-4">
                 <div class="card">
                   <div class="card-header">
-                    <h5 class="card-title branch name">', $value["BranchName"], '</h5>
+                    <h5 class="card-title branch name">', $profitValue["BranchName"], '</h5>
                   </div>
                   <div class="card-body">
                     <div class="row">
@@ -158,7 +157,7 @@
                         <div class="card">
                           <div class="card-body">
                             <h6 class="card-subtitle mb-2 text-muted">Sales</h6>
-                            <p> £', $value["Sales"], '</p>
+                            <p> £', $profitValue["Sales"], '</p>
                           </div>
                         </div>
                       </div>
@@ -166,7 +165,7 @@
                         <div class="card">
                           <div class="card-body">
                             <h6 class="card-subtitle mb-2 text-muted">Expenses</h6>
-                            <p> £', $value["Expenses"], '</p>
+                            <p> £', $profitValue["Expenses"], '</p>
                           </div>
                         </div>
                       </div>
@@ -174,7 +173,7 @@
                         <div class="card">
                           <div class="card-body">
                             <h6 class="card-subtitle mb-2 text-muted">Profit</h6>
-                            <p> £', $value["Profit"], '</p>
+                            <p> £', $profitValue["Profit"], '</p>
                           </div>
                         </div>
                       </div>
