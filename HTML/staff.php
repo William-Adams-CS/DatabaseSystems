@@ -1,3 +1,41 @@
+<?php
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
+
+    $staffId = 14; //Staff ID for James Smith, who works at the Dundee branch.
+
+    try {
+        $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+        echo "<script>console.log('Successful Connection')</script>";
+    } catch(Exception $e) {
+        echo $e;
+    }
+  session_start();
+  if ($_SESSION["username"] != "staff") {
+    header("Location: "."index.html");
+    die();
+  }
+
+  $staffData = readStaffData($staffId);
+
+  $productData = readProductInformation();
+
+  $stockStatus = determineStockStatus();
+  $stockStatus = $stockStatus["inStock"];
+
+  $stockStatusInBranch = [];
+  
+  foreach ($stockStatus as $stockValues) {
+    if($stockValues["StockBranchName"] == $staffData["BranchName"]) {
+        array_push($stockStatusInBranch, $stockValues);
+    }
+  }
+
+  $orderData = readOrderInformation();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,7 +86,7 @@
                         <div class="card-body text-center">
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                            <h5 class="my-3">John Smith</h5>
+                            <h5 class="my-3"><?php echo $staffData["FirstName"], " ", $staffData["LastName"] ?></h5>
                             <button type="button" class="btn btn-primary">Update Details</button>                                                        
                         </div>
                     </div>
@@ -58,7 +96,18 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Staff ID</p>
+                                    <p class="mb-0">Staff ID:</p>
+                                    <p class="mb-0"><?php echo $staffData["StaffID"] ?></p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0"></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <p class="mb-0">Email:</p>
+                                    <p class="mb-0"><?php echo $staffData["Email"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -67,7 +116,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Email</p>
+                                    <p class="mb-0">Phone:</p>
+                                    <p class="mb-0"><?php echo $staffData["Phone"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -76,7 +126,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Phone</p>
+                                    <p class="mb-0">Position:</p>
+                                    <p class="mb-0"><?php echo $staffData["Position"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -85,7 +136,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Position</p>
+                                    <p class="mb-0">Salary:</p>
+                                    <p class="mb-0"><?php echo $staffData["Salary"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -94,16 +146,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Salary</p>
-                                </div>
-                                <div class="col-sm-9">
-                                    <p class="text-muted mb-0"></p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <p class="mb-0">Branch</p>
+                                    <p class="mb-0">Branch:</p>
+                                    <p class="mb-0"><?php echo $staffData["BranchName"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -127,16 +171,19 @@
                   <th scope="col">Stock Quantity</th>
                   <th scope="col">Branch</th>
                 </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
               </thead>
               <tbody>
-                <!-- Data rows would go here -->
+                <?php
+                    foreach ($productData as $productField => $productData) {
+                        echo "<tr>
+                                <td>", $productField + 1,"</td>
+                                <td>", $productData['ProductName'] ,"</td>
+                                <td>", $productData['Price'] ,"</td>
+                                <td>", $stockStatusInBranch[$productField]["StockQuantity"], "</td>
+                                <td>", $staffData["BranchName"] ,"</td>
+                            </tr>";
+                    }
+                ?>
               </tbody>
             </table>
             </div>
@@ -148,36 +195,29 @@
             <table class="table">
               <thead class="blue-header">
                 <tr>
-                  <th scope="col">OrderID</th>
-                  <th scope="col">FirstName</th>
-                  <th scope="col">LastName</th>
-                  <th scope="col">TotalCost</th>
-                  <th scope="col">OrderDate</th>
-                  <th scope="col">ExpectedDeliveryDate</th>
-                  <th scope="col">DeliveryStatus</th>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Total Cost</th>
+                  <th scope="col">Order Date</th>
+                  <th scope="col">Expected Delivery Date</th>
+                  <th scope="col">Delivery Status</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- Replace the following rows with your actual data -->
-                <tr>
-                  <td>1</td>
-                  <td>John</td>
-                  <td>Doe</td>
-                  <td>100.00</td>
-                  <td>2023-01-01</td>
-                  <td>2023-01-10</td>
-                  <td>Shipped</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jane</td>
-                  <td>Smith</td>
-                  <td>150.00</td>
-                  <td>2023-02-01</td>
-                  <td>2023-02-10</td>
-                  <td>Delivered</td>
-                </tr>
-                <!-- Add more rows as needed -->
+                <?php
+                    foreach ($orderData as $orderInformation) {
+                        echo "<tr>
+                                <td>", $orderInformation["OrderID"] ,"</td>
+                                <td>", $orderInformation["CustomerFirstName"] ,"</td>
+                                <td>", $orderInformation["CustomerLastName"] ,"</td>
+                                <td>", $orderInformation["TotalCost"] ,"</td>
+                                <td>", $orderInformation["OrderDate"] ,"</td>
+                                <td>", $orderInformation["ExpectedDeliveryDate"] ,"</td>
+                                <td>", $orderInformation["DeliveryStatus"] ,"</td>
+                            </tr>";
+                    }
+                ?>
               </tbody>
             </table>
           </div>
@@ -185,5 +225,67 @@
     </section>
     </section>
 </body>
+<?php
 
+// Function to read staff data
+function readStaffData($staffId) {
+    global $mysql;
+    $query = $mysql->prepare("CALL readStaffData(:staffId);");
+    $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);   //remember to bind parameters for all fields above
+    $query->execute();
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
+
+// Function to update staff information
+function updateStaffInfo($staffId, $firstName, $lastName, $email, $phone, $position, $salary, $Branchname) {
+    global $mysql;
+    $query = $mysql->prepare("CALL updateStaffInfo(:staffId,:firstName,:lastName,:email,:phone,:position,:salary,:Branchname);");
+    $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+    $query->bindParam(':firstName', $firstName, PDO::PARAM_STR);
+    $query->bindParam(':lastName', $lastName, PDO::PARAM_STR);
+    $query->bindParam(':email', $email, PDO::PARAM_STR);
+    $query->bindParam(':phone', $phone, PDO::PARAM_STR);
+    $query->bindParam(':position', $position, PDO::PARAM_STR);
+    $query->bindParam(':salary', $salary, PDO::PARAM_INT);
+    $query->bindParam(':Branchname', $Branchname, PDO::PARAM_INT);
+    //add branchName bind param
+    $query->execute();
+}
+
+// Function to read customer information
+// function readCustomerInformation() {
+    // global $mysql;
+    // $query = $mysql->query("SELECT * FROM Customers");
+    // return $query->fetchAll(PDO::FETCH_ASSOC);
+//}
+
+// Function to read order information
+function readOrderInformation() {
+    global $mysql;
+    $query = $mysql->query("CALL readOrderInformation();");
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Function to read delivery information
+//function readDeliveryInformation() {
+    //global $mysql;
+    //$query = $mysql->query("SELECT * FROM Location");
+    //return $query->fetchAll(PDO::FETCH_ASSOC);
+//}
+
+// Function to read product information
+function readProductInformation() {
+    global $mysql;
+    $query = $mysql->query("CALL readAvailableProducts();");
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Function to determine products that are in and out of stock
+function determineStockStatus() {
+    global $mysql;
+    $query = $mysql->query("CALL determineStockStatus();");
+    $inStock = $query->fetchAll(PDO::FETCH_ASSOC);  
+    return array('inStock' => $inStock);
+}
+?>
 </html>
