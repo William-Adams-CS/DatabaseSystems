@@ -1,3 +1,31 @@
+<?php
+    session_start();
+    if ($_SESSION["username"] != "manager") {
+    header("Location: "."index.html");
+    die();
+    }
+
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
+
+    $managerId = 14;
+    $branchName = "";
+
+    try {
+        $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+        echo "<script>console.log('Successful Connection')</script>";
+    } catch(Exception $e) {
+        echo $e;
+    }
+
+    $staffData = readStaffData($managerId);
+
+    $branchName = $staffData["BranchName"];
+    $allStaffData = readAllStaffData($branchName);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,7 +76,7 @@
                         <div class="card-body text-center">
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                            <h5 class="my-3">John Smith</h5>
+                            <h5 class="my-3"><?php echo $staffData["FirstName"], " ", $staffData["LastName"] ?></h5>
                             <button type="button" class="btn btn-primary">Update Details</button>                                                        
                         </div>
                     </div>
@@ -58,7 +86,18 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Staff ID</p>
+                                    <p class="mb-0">Staff ID:</p>
+                                    <p class="mb-0"><?php echo $staffData["StaffID"] ?></p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0"></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <p class="mb-0">Email:</p>
+                                    <p class="mb-0"><?php echo $staffData["Email"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -67,7 +106,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Email</p>
+                                    <p class="mb-0">Phone:</p>
+                                    <p class="mb-0"><?php echo $staffData["Phone"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -76,7 +116,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Phone</p>
+                                    <p class="mb-0">Position:</p>
+                                    <p class="mb-0"><?php echo $staffData["Position"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -85,7 +126,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Position</p>
+                                    <p class="mb-0">Salary:</p>
+                                    <p class="mb-0"><?php echo $staffData["Salary"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -94,16 +136,8 @@
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Salary</p>
-                                </div>
-                                <div class="col-sm-9">
-                                    <p class="text-muted mb-0"></p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <p class="mb-0">Branch</p>
+                                    <p class="mb-0">Branch:</p>
+                                    <p class="mb-0"><?php echo $staffData["BranchName"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
                                     <p class="text-muted mb-0"></p>
@@ -132,15 +166,19 @@
                 </tr>
               </thead>
               <tbody>
-                <td>x</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>                
-                <!-- No data provided, just the structure -->
+                <?php
+                // There will need to be a foreach loop here once the allStaffData function works
+                    echo "<tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>"
+                ?>
               </tbody>
             </table>
         </div>
@@ -207,5 +245,56 @@
     </section>
     </section>
 </body>
+<?php
 
+// Function to read manager data
+function readManagerData($managerId) {
+    global $mysql;
+    $query = $mysql->prepare("CALL readManagerData(:managerId);");
+    $query->bindParam(':managerId', $managerId, PDO::PARAM_INT);
+    $query->execute();
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
+
+// Function to read staff data (reused from the Staff page)
+function readStaffData($staffId) {
+    global $mysql;
+    $query = $mysql->prepare("CALL readStaffData(:staffId);");
+    $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+    $query->execute();
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
+
+// Function to read all staff data (reused from the Staff page)
+function readAllStaffData($branchName) {
+    global $mysql;
+    $query = $mysql->prepare("CALL readAllStaffData(:branchName);");
+    $query->bindParam(':branchName', $branchName, PDO::PARAM_STR);
+    $query->execute();
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
+
+// Function to read products that are in and out of stock
+function determineStockStatus() {
+    global $mysql;
+    $query = $mysql->query("CALL determineStockStatus();");
+    $query->execute();
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
+
+// Function to read supplier information
+function readSupplierInformation() {
+    global $mysql;
+    $query = $mysql->query("CALL readSupplierInformation();");
+    // update bindParams to have all the fields selected
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Function to read product information (reused from the Staff page)
+function readProductInformation() {
+    global $mysql;
+    $query = $mysql->query("CALL readProductInformation();");
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+?>
 </html>
