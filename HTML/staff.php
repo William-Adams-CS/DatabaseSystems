@@ -4,7 +4,7 @@
     $password = "Password123";
     $dbname = "coral-cove-database";
 
-    $staffId = 14; //Staff ID for James Smith, who works at the Dundee branch.
+    $staffId = 2; //Staff ID for James Smith, who works at the Dundee branch.
 
     try {
         $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);

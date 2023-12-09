@@ -23,7 +23,9 @@
     $staffData = readStaffData($managerId);
 
     $branchName = $staffData["BranchName"];
-    $allStaffData = readAllStaffData($branchName);
+    $allStaffData = readAllStaffData($branchName,$managerId);
+    $stock = determineStockStatusByBranch($branchName);
+    $supplierInfo = readSupplierInformation();
 ?>
 
 <!DOCTYPE html>
@@ -168,20 +170,22 @@
               <tbody>
                 <?php
                 // There will need to be a foreach loop here once the allStaffData function works
-                    echo "<tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>"
+                    foreach ($allStaffData as $staffMember) {
+                        echo "<tr>
+                                <td>", $staffMember["StaffID"], "</td>
+                                <td>", $staffMember["FirstName"], "</td>
+                                <td>", $staffMember["LastName"], "</td>
+                                <td>", $staffMember["Email"], "</td>
+                                <td>", $staffMember["Phone"], "</td>
+                                <td>", $staffMember["Position"], "</td>
+                                <td>", $staffMember["Salary"], "</td>
+                                <td>", $staffMember["BranchName"], "</td>
+                            </tr>";
+                    }
                 ?>
               </tbody>
             </table>
-        </div>
+            </div>
           </div>
 
           <div class="container mt-4">
@@ -192,20 +196,27 @@
                 <tr>
                   <th scope="col">Product ID</th>
                   <th scope="col">Name</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Stock Quantity</th>
+                  <th scope="col">Cost Per Unit</th>
+                  <th scope="col">Stock Status</th>
                   <th scope="col">Branch</th>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <th scope="col">Supplier ID</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- Data rows would go here -->
+                <?php
+                    $counter = 1;
+                    foreach ($stock as $product) {
+                        echo "<tr>
+                                <td>", $counter, "</td>
+                                <td>", $product["ProductName"], "</td>
+                                <td>", $product["CostPerUnit"], "</td>
+                                <td>", $product["StockStatus"], "</td>
+                                <td>", $product["BranchName"], "</td>
+                                <td>", $product["SupplierID"], "</td>
+                            </tr>";
+                        $counter++;
+                    }
+                ?>
               </tbody>
             </table>
         </div>
@@ -217,26 +228,29 @@
             <table class="table">
               <thead>
                 <tr>
+                  <th scope="col">Supplier ID</th>
                   <th scope="col">Supplier Name</th>
                   <th scope="col">Contact Person</th>
                   <th scope="col">Supplier Email</th>
                   <th scope="col">Supplier Phone</th>
-                  <th scope="col">Address Line 1</th>
-                  <th scope="col">Address Line 2</th>
+                  <th scope="col">Address</th>
                   <th scope="col">Postal Code</th>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
                 </tr>
               </thead>
               <tbody>
-                <!-- Data rows would go here -->
+                <?php
+                    foreach ($supplierInfo as $supplier) {
+                        echo "<tr>
+                                <td>", $supplier["SupplierID"], "</td>
+                                <td>", $supplier["SupplierName"], "</td>
+                                <td>", $supplier["ContactPerson"], "</td>
+                                <td>", $supplier["SupplierEmail"], "</td>
+                                <td>", $supplier["SupplierPhone"], "</td>
+                                <td>", $supplier["AddressLine1"], ", ", $supplier["AddressLine2"], "</td>
+                                <td>", $supplier["PostalCode"], "</td>
+                            </tr>";
+                    }
+                ?>
               </tbody>
             </table>
         </div>
@@ -266,27 +280,28 @@ function readStaffData($staffId) {
 }
 
 // Function to read all staff data (reused from the Staff page)
-function readAllStaffData($branchName) {
+function readAllStaffData($branch,$manager) {
     global $mysql;
-    $query = $mysql->prepare("CALL readAllStaffData(:branchName);");
-    $query->bindParam(':branchName', $branchName, PDO::PARAM_STR);
+    $query = $mysql->prepare("CALL readBranchesStaff(:branchName,:managerId);");
+    $query->bindParam(':branchName', $branch, PDO::PARAM_STR);
+    $query->bindParam(':managerId', $manager, PDO::PARAM_INT);
     $query->execute();
-    return $query->fetch(PDO::FETCH_ASSOC);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Function to read products that are in and out of stock
-function determineStockStatus() {
+function determineStockStatusByBranch($branch) {
     global $mysql;
-    $query = $mysql->query("CALL determineStockStatus();");
+    $query = $mysql->prepare("CALL determineStockStatusByBranch(:branchName);");
+    $query->bindParam(':branchName', $branch, PDO::PARAM_STR);
     $query->execute();
-    return $query->fetch(PDO::FETCH_ASSOC);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Function to read supplier information
 function readSupplierInformation() {
     global $mysql;
     $query = $mysql->query("CALL readSupplierInformation();");
-    // update bindParams to have all the fields selected
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
