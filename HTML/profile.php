@@ -33,10 +33,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link"  href="Customer.html">Home</a>
+                        <a class="nav-link"  href="Customer.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="Profile.html">Profile</a>
+                        <a class="nav-link active" aria-current="page" href="Profile.php">Profile</a>
                     </li>            
                 </ul>
             </div>

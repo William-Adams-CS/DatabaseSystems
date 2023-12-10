@@ -12,6 +12,9 @@
   } catch(Exception $e) {
       echo $e;
   }
+
+  $salaries = readStaffSalary($staffId);
+
 ?>
 
 <!DOCTYPE html>
@@ -143,51 +146,54 @@
     
 
     <section class="profits">
-    <?php
-      $profitData = readBranchProfit();
-      foreach ($profitData as $profitValue) {
-        echo '<div class="container mt-4">
-                <div class="card">
-                  <div class="card-header">
-                    <h5 class="card-title branch name">', $profitValue["BranchName"], '</h5>
-                  </div>
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-4">
-                        <div class="card">
-                          <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Sales</h6>
-                            <p> £', $profitValue["Sales"], '</p>
+          <div class="container mt-4">
+            <?php
+              $profitData = readBranchProfit();
+              foreach ($profitData as $profitValue) {
+                echo '  <div class="card">
+                          <div class="card-header">
+                            <h5 class="card-title branch name">', $profitValue["StockBranch"], '</h5>
                           </div>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="card">
                           <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Expenses</h6>
-                            <p> £', $profitValue["Expenses"], '</p>
+                            <div class="row">
+                              <div class="col-md-4">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Sales</h6>
+                                    <p> £', $profitValue["Sales"], '</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Expenses</h6>
+                                    <p> £', $profitValue["Expenses"], '</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-4">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Profit</h6>
+                                    <p> £', $profitValue["Profit"], '</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="card">
-                          <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Profit</h6>
-                            <p> £', $profitValue["Profit"], '</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>';
-      }
-    ?>
+                        </div>';
+              }
+            ?>
         
 
             <div class="card">
                 <div class="card-header">
                   <h5 class="card-title">Total Profit </h5>
-                  <p>ss</p>
+                  <p><?php 
+                      $totalProfit = readTotalProfit();
+                      echo $totalProfit["TotalProfit"];
+                   ?></p>
                 </div>
             </div>
           </div>
@@ -209,18 +215,21 @@
               <th>Salary</th>
               <th>Branch</th>
             </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
           </thead>
           <tbody>
-            <!-- Data rows would go here -->
+            <?php
+                foreach ($salaries as $staffMember) {
+                    echo "<tr>
+                            <td>", $staffMember["StaffID"], "</td>
+                            <td>", $staffMember["FirstName"], "</td>
+                            <td>", $staffMember["LastName"], "</td>
+                            <td>", $staffMember["Phone"], "</td>
+                            <td>", $staffMember["Position"], "</td>
+                            <td>", $staffMember["BranchName"], "</td>
+                            <td>", $staffMember["Salary"], "</td>
+                        </tr>";
+                }
+            ?>
           </tbody>
         </table>
         </div>
@@ -239,8 +248,11 @@
 
         // Function to read staff salary
         function readStaffSalary($staffId) {
-            $staffData = readStaffData($staffId);
-            return $staffData['Salary'];
+            global $mysql;
+            $query = $mysql->prepare("CALL ReadStaffSalary(:staffId);");
+            $query->bindParam(':staffId', $staffId, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // Function to read branch profit
@@ -248,7 +260,7 @@
             global $mysql;
             $query = $mysql->prepare("CALL ReadBranchProfit();");
             $query->execute();
-            return $query->fetch(PDO::FETCH_ASSOC);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // Function to read total profit
@@ -264,7 +276,7 @@
             global $mysql;
             $query = $mysql->prepare("CALL ReadProfitByMonth();");
             $query->execute();
-            return $query->fetch(PDO::FETCH_ASSOC);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // Function to read sales by branch and profit by branch or total profit
@@ -315,7 +327,7 @@
             global $mysql;
             $query = $mysql->query("CALL determineStockStatus();");
             $query->execute();
-            return $query->fetch(PDO::FETCH_ASSOC);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
       ?>
 </body>
