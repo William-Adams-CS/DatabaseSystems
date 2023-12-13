@@ -1,4 +1,10 @@
 <?php
+  session_start();
+  if ($_SESSION["username"] != "executive") {
+  header("Location: "."index.html");
+  die();
+  }
+  
   $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
   $username = "admin";
   $password = "Password123";
@@ -42,7 +48,7 @@
 <style></style>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary p-2" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary p-2 navbar-fixed-top" data-bs-theme="dark">
         <img src="Coral Cove Fisheries Logo - Transparent PNG.png" style="width: 15%;" alt="">
         <div class="container-fluid">            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -52,7 +58,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="Staff.html">Executive</a>
+                        <a class="nav-link active" aria-current="page" href="#">Executive</a>
                     </li>            
                 </ul>
             </div>
@@ -69,7 +75,7 @@
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
                             <h5 class="my-3"><?php echo $data["FirstName"], " ", $data["LastName"] ?></h5>
-                            <button type="button" class="btn btn-primary">Update Details</button>                                                        
+                            <button type="button" class="btn btn-primary" onClick="redirect()">Update Details</button>                                                        
                         </div>
                     </div>
                 </div>
@@ -212,8 +218,8 @@
               <th>Last Name</th>
               <th>Phone</th>
               <th>Position</th>
-              <th>Salary</th>
               <th>Branch</th>
+              <th>Salary</th>
             </tr>
           </thead>
           <tbody>
@@ -234,6 +240,14 @@
         </table>
         </div>
       </div>
+
+      <script>
+
+        function redirect() { 
+            window.location = "/HTML/updateForm.html"; 
+        }
+
+      </script>
 
       <?php
 

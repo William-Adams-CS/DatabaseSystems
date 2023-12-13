@@ -1,3 +1,26 @@
+<?php
+  session_start();
+  if ($_SESSION["username"] != "customer") {
+  header("Location: "."index.html");
+  die();
+  }
+
+  $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+  $username = "admin";
+  $password = "Password123";
+  $dbname = "coral-cove-database";
+
+  $customerId = 1; //customer ID for john smith
+
+  try {
+    $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+    echo "<script>console.log('Successful Connection');</script>";
+  } catch(Exception $e) {
+      echo $e;
+  }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,7 +48,7 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary  p-2" data-bs-theme="dark">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary p-2 navbar-fixed-top" data-bs-theme="dark">
             <img src="Coral Cove Fisheries Logo - Transparent PNG.png" style="width: 15%;" alt="">
             <div class="container-fluid">                
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -38,7 +61,7 @@
                             <a class="nav-link active" aria-current="page" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="Profile.php">Profile</a>
+                            <a class="nav-link" href="profile.php">Profile</a>
                         </li>
 
                     </ul>
@@ -49,8 +72,46 @@
 
 
     <main>
+
+      <section class="products">
+            <div class="container mt-4">
+              <h1>Products</h1>
+              <div class="row border-top">
+                <?php
+                  $counter = 1;
+                  $productData = readProductInformation();
+                  foreach ($productData as $product) {
+                    echo '  <div class="col-md-3 mb-5">
+                              <div class="card" style="width: 18rem;">
+                                <img class="card-img-top" src="', $product["ProductImageAddress"], '" alt="Card image cap" width="286" height="383">
+                                <div class="card-body">
+                                  <h5 id="name', "$counter", '" class="card-title">', $product["ProductName"] ,'</h5>
+                                  <p id="category', "$counter", '" class="card-text">', $product["Category"] ,'</p>
+                                  <p id="price', "$counter", '" class="card-text">£', $product["Price"] ,'</p>
+                                  <a id=', $counter, ' href="" onclick="addToCart(this)" class="btn btn-primary">Add to cart</a>
+                                </div>
+                              </div>
+                            </div>';
+                    $counter++;
+                  }
+                ?>
+              </div>
+            </div>
+
+        <!-- <div class="card" style="width: 18rem;">
+          <img class="card-img-top" src="', $product["ProductImageAddress"], '" alt="Card image cap">
+          <div class="card-body">
+            <h5 id="name', "$product", '" class="card-title">', $product["ProductName"] ,'</h5>
+            <p id="category', "$product", '" class="card-text">', $product["Category"] ,'</p>
+            <p id="price', "$product", '" class="card-text">', $product["Price"] ,'</p>
+            <a id="$product" href="" onclick="addToCart(this)" class="btn btn-primary">Add to cart</a>
+          </div>
+        </div> -->
+          
+      </section>
+
  
-<section class="h-100 h-custom" style="background-color: #121017;">
+<!-- <section class="h-100 h-custom" style="background-color: #121017;">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-12">
@@ -65,7 +126,7 @@
                     </div>
                     <hr class="my-4">
   
-                    <!-- Product 1 -->
+                    Product 1
                     <div class="row mb-4 d-flex justify-content-between align-items-center">
                       <div class="col-md-2 col-lg-2 col-xl-2">
                         <img
@@ -144,11 +205,102 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   
 
     </main>
+    <div class="container">
+      <footer class="py-5 border-top navbar-fixed-bottom">
+        <row class="row mt-1">
+          <div class="col-9">
+            <p id="cart"><b>Cart: </b></p>
+            <p id="totalItems"><b>Total Items: </b></p>
+            <p id="totalPrice"><b>Total Price: </b></p>
+          </div>
+          <div class="col-3 position-relative">
+            <button class="btn btn-primary mb-1" type="button">Check Out</button>
+            <button class="btn btn-primary" type="button" onclick="removeItemsFromCart()">Remove Items From Cart</button>
+          </div>
+        </row>
+      </footer>
+    </div>
+
+    <script>
+
+      let cart = [];
+      let totalItems = 0;
+      let TotalPrice = [];
+
+      function addToCart(element) {
+        number = element.id;
+        name = document.getElementById("name" + number).innerHTML;
+        price = document.getElementById("price" + number).innerHTML;
+
+        price = price.slice(1);
+
+        cart.push(name);
+        TotalPrice.push(parseFloat(price));
+
+        updateCart();
+
+        event.preventDefault();
+
+      }
+
+      function updateCart() {
+
+        cartLength = cart.length;
+        cartItems = "";
+        totalCost = 0;
+
+        for (let i = 0; i < cartLength; i++) {
+
+          cartItems += cart[i];
+
+          if(i != cartLength - 1){
+            cartItems += ", ";
+          }
+
+        }
+
+        for (let v = 0; v < cartLength; v++) {
+
+          totalCost += TotalPrice[v];
+
+        }
+
+        totalCost = totalCost.toString()
+        cartLength = cartLength.toString()
+
+        document.getElementById("cart").innerHTML = "<b>Cart: </b>" + cartItems;
+        document.getElementById("totalItems").innerHTML = "<b>Total Items: </b>" + cartLength;
+        document.getElementById("totalPrice").innerHTML = "<b>Total Price: </b>" + "£" + totalCost;
+
+        event.preventDefault();
+
+      }
+
+      function removeItemsFromCart() {
+
+        cart = [];
+        totalItems = 0;
+        TotalPrice = [];
+
+        updateCart();
+
+        event.preventDefault();
+
+      }
+
+    </script>
+
+    <?php
+      function readProductInformation() {
+        global $mysql;
+        $query = $mysql->query("CALL readAvailableProducts();");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+      }
+    ?>
 
 </body>
-
 </html>

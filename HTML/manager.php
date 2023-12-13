@@ -53,7 +53,7 @@
 <style></style>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary p-2" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary p-2 navbar-fixed-top" data-bs-theme="dark">
         <img src="Coral Cove Fisheries Logo - Transparent PNG.png" style="width: 15%;" alt="">
         <div class="container-fluid">            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -63,7 +63,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="Manager.html">Manager</a>
+                        <a class="nav-link active" aria-current="page" href="#">Manager</a>
                     </li>            
                 </ul>
             </div>
@@ -79,7 +79,7 @@
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
                             <h5 class="my-3"><?php echo $staffData["FirstName"], " ", $staffData["LastName"] ?></h5>
-                            <button type="button" class="btn btn-primary">Update Details</button>                                                        
+                            <button type="button" class="btn btn-primary" onClick="redirect()">Update Details</button>                                                        
                         </div>
                     </div>
                 </div>
@@ -258,6 +258,15 @@
        
     </section>
     </section>
+
+    <script>
+
+    function redirect() { 
+        window.location = "/HTML/updateForm.html"; 
+    }
+
+    </script>
+
 </body>
 <?php
 

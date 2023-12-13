@@ -1,3 +1,25 @@
+<?php
+    $host = "coral-cove-database.co6e0uywsscm.us-east-1.rds.amazonaws.com";
+    $username = "admin";
+    $password = "Password123";
+    $dbname = "coral-cove-database";
+    
+    try {
+        $mysql = new PDO("mysql:host=".$host.";dbname=".$dbname,$username, $password);
+        echo "<script>console.log('Successful Connection')</script>";
+    } catch(Exception $e) {
+        echo $e;
+    }
+    session_start();
+    if ($_SESSION["username"] != "customer") {
+        header("Location: "."index.html");
+        die();
+    }
+
+    $customerData = readCustomerData(1)
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,7 +45,7 @@
 <style></style>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary p-2" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary p-2 navbar-fixed-top" data-bs-theme="dark">
         <img src="Coral Cove Fisheries Logo - Transparent PNG.png" style="width: 15%;" alt="">
         <div class="container-fluid">            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -33,10 +55,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link"  href="Customer.php">Home</a>
+                        <a class="nav-link"  href="customer.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="Profile.php">Profile</a>
+                        <a class="nav-link active" aria-current="page" href="#">Profile</a>
                     </li>            
                 </ul>
             </div>
@@ -51,9 +73,9 @@
                         <div class="card-body text-center">
                             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-                            <h5 class="my-3">John Smith</h5>
-                            <button type="button" class="btn btn-primary">Update Details</button>   
-                            <button type="button" class="btn btn-primary bg-danger">DELETE</button>                                                     
+                            <h5 class="my-3"><?php echo $customerData["FirstName"], " ", $customerData["LastName"] ?></h5>
+                            <button type="button" class="btn btn-primary" onClick="redirect()">Update Details</button>  
+                            <button type="button" class="btn btn-primary bg-danger" onClick="deleteAccount()">DELETE</button>
                         </div>
                     </div>
                 </div>
@@ -62,37 +84,41 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Email</p>
+                                    <p class="mb-0">Email:</p>
+                                    <p class="mb-0"><?php echo $customerData["Email"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0">example@example.com</p>
+                                    <p class="text-muted mb-0"></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <p class="mb-0">Phone:</p>
+                                    <p class="mb-0"><?php echo $customerData["Phone"] ?></p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0"></p>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Phone</p>
+                                    <p class="mb-0">Address:</p>
+                                    <p class="mb-0"><?php echo $customerData["AddressLine1"], ", ", $customerData["AddressLine2"], ", ", $customerData["City"], ", ", $customerData["PostalCode"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0">(097) 234-5678</p>
+                                    <p class="text-muted mb-0"></p>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Address</p>
+                                    <p class="mb-0">Loyalty Points:</p>
+                                    <p class="mb-0"><?php echo $customerData["LoyaltyPoints"] ?></p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0">(098) 765-4321</p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <p class="mb-0">Loyalty Points</p>
-                                </div>
-                                <div class="col-sm-9">
-                                    <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                                    <p class="text-muted mb-0"></p>
                                 </div>
                             </div>
                         </div>
@@ -103,44 +129,72 @@
         
        
         <div class="container mt-4">
+            <div class="card mb-4 p-3">
+            <h2>Order Information</h2>
             <table class="table">
               <thead class="blue-header">
                 <tr>
-                  <th scope="col">OrderID</th>
-                  <th scope="col">FirstName</th>
-                  <th scope="col">LastName</th>
-                  <th scope="col">TotalCost</th>
-                  <th scope="col">OrderDate</th>
-                  <th scope="col">ExpectedDeliveryDate</th>
-                  <th scope="col">DeliveryStatus</th>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Total Cost</th>
+                  <th scope="col">Order Date</th>
+                  <th scope="col">Expected Delivery Date</th>
+                  <th scope="col">Delivery Status</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- Replace the following rows with your actual data -->
-                <tr>
-                  <td>1</td>
-                  <td>John</td>
-                  <td>Doe</td>
-                  <td>100.00</td>
-                  <td>2023-01-01</td>
-                  <td>2023-01-10</td>
-                  <td>Shipped</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jane</td>
-                  <td>Smith</td>
-                  <td>150.00</td>
-                  <td>2023-02-01</td>
-                  <td>2023-02-10</td>
-                  <td>Delivered</td>
-                </tr>
-                <!-- Add more rows as needed -->
+                <?php
+                    $orders = readCustomerOrders(1);
+                    echo "<tr>
+                            <td>", $orders["OrderID"] ,"</td>
+                            <td>", $orders["FirstName"] ,"</td>
+                            <td>", $orders["LastName"] ,"</td>
+                            <td>", $orders["TotalCost"] ,"</td>
+                            <td>", $orders["OrderDate"] ,"</td>
+                            <td>", $orders["ExpectedDeliveryDate"] ,"</td>
+                            <td>", $orders["DeliveryStatus"] ,"</td>
+                        </tr>";
+                ?>
               </tbody>
             </table>
+            </div>
           </div>
     </section>
     </section>
+
+    <script>
+
+    function redirect() { 
+        window.location = "/HTML/updateForm.html"; 
+    }
+
+    function deleteAccount() {
+        window.location = "/HTML/deleteAccountForm.html"; 
+    }
+
+
+    </script>
+
 </body>
+
+<?php
+
+    function readCustomerData($id) {
+        global $mysql;
+        $query = $mysql->prepare("CALL readCustomerData(:customerId);");
+        $query->bindParam(':customerId', $id, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    function readCustomerOrders($id) {
+        global $mysql;
+        $query = $mysql->prepare("CALL readCustomerOrders(:customerId);");
+        $query->bindParam(':customerId', $id, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+?>
 
 </html>
